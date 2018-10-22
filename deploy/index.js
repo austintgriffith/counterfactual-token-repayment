@@ -6,8 +6,6 @@ var Wallet = ethers.Wallet;
 
 const wallet = ethers.Wallet.createRandom();
 let httpProvider = new ethers.providers.JsonRpcProvider();
-//let privateKey = '0x0123456789012345678901234567890123456789012345678901234567890123';
-//let wallet = new ethers.Wallet(privateKey, httpProvider);
 let abi = fs.readFileSync("../Sweeper/Sweeper.abi").toString()
 let bytecode = fs.readFileSync("../Sweeper/Sweeper.bytecode").toString()
 let factory = new ethers.ContractFactory(abi, bytecode, wallet);
