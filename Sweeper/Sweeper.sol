@@ -1,17 +1,17 @@
 pragma solidity ^0.4.24;
 
 contract Sweeper {
-
   constructor(address to,address token,uint256 value) public {
-
-    // CALL SOME REPAY() FUNCTION
-
-    IERC20(token).transfer(to,value);
+    IERC20(token).approve(to,value);
+    Loan(to).repay(address(this),token,value);
     selfdestruct(to);
   }
-
 }
 
 contract IERC20 {
-  function transfer(address to, uint256 value) external {}
+  function approve(address spender, uint256 value) external {}
+}
+
+contract Loan {
+  function repay(address from, address token, uint256 value) public returns (bool) {}
 }

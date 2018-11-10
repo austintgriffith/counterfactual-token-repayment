@@ -2,7 +2,7 @@ var ethers = require('ethers');
 var fs = require('fs');
 var Wallet = ethers.Wallet;
 
-//usage: node index.js TO_ADDRESS TOKEN_ADDRESS TOKEN_AMOUNT
+//usage: node deploy.js LOAN_ADDRESS TOKEN_ADDRESS TOKEN_AMOUNT
 
 const wallet = ethers.Wallet.createRandom();
 let httpProvider = new ethers.providers.JsonRpcProvider();

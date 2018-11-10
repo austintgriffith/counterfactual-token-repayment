@@ -34,7 +34,7 @@ class App extends Component {
          }}
        />
       )
-      /*
+
       connectedDisplay.push(
         <ContractLoader
          key="ContractLoader"
@@ -69,26 +69,33 @@ class App extends Component {
             console.log("Transaction Receipt",transaction,receipt)
           }}
         />
-      )*/
-      /*
+      )
+
       if(contracts){
         contractsDisplay.push(
           <div key="UI" style={{padding:30}}>
             <div>
               <Address
                 {...this.state}
-                address={contracts.YOURCONTRACT._address}
+                address={contracts.Loan._address}
               />
             </div>
-            broadcast string: <input
+            <div>1. do full deploy</div>
+            <div>2. cd counterfactual; node deploy.js (cat ../Loan/Loan.address) (cat ../SomeCoin/SomeCoin.address) 1</div>
+            <div>3. clevis contract mint SomeCoin 0 **counterfactualaddress** 1</div>
+            <div>4. execute one-time counterfactual tx </div>
+            <input
                 style={{verticalAlign:"middle",width:400,margin:6,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
-                type="text" name="broadcastText" value={this.state.broadcastText} onChange={this.handleInput.bind(this)}
+                type="text" name="mintAmount" value={this.state.mintAmount} onChange={this.handleInput.bind(this)}
             />
-            <Button color={this.state.doingTransaction?"orange":"green"} size="2" onClick={()=>{
+            <Button color={"green"} size="2" onClick={()=>{
                 this.setState({doingTransaction:true})
-                //tx(contracts.YOURCONTRACT.YOURFUNCTION(YOURARGUMENTS),(receipt)=>{
-                //  this.setState({doingTransaction:false})
-                //})
+                this.state.web3.eth.sendSignedTransaction("0xf9016d8085174876e8008344aa208080b9011a6080604052348015600f57600080fd5b5060405160608060ba83398101604081815282516020840151938201517f095ea7b3000000000000000000000000000000000000000000000000000000008452600160a060020a038083166004860152602485018290529251919493909284169163095ea7b39160448082019260009290919082900301818387803b158015609657600080fd5b505af115801560a9573d6000803e3d6000fd5b5050505082600160a060020a0316ff000000000000000000000000002ec0f9a5ab73a95a9eb8b094b9e030b42d30e9aa000000000000000000000000a4ba92a0b67ca4f45b241ad4e8b4266493ee300700000000000000000000000000000000000000000000000000000000000000011ba079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798a00e8fb7cdce3412843c4bff0bd9f0fe83ba0cd8aaaf083cee221f817b6443c9ad",(result)=>{
+                  console.log("RESULT",result)
+                })
+                /*tx(contracts.SomeCoin.mint(YOURARGUMENTS),(receipt)=>{
+                 this.setState({doingTransaction:false})
+               })*/
               }}>
               Send
             </Button>
@@ -105,7 +112,7 @@ class App extends Component {
           </div>
         )
       }
-      */
+
     }
     return (
       <div className="App">
