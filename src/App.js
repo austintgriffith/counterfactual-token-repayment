@@ -80,35 +80,23 @@ class App extends Component {
                 address={contracts.Loan._address}
               />
             </div>
-            <div>1. do full deploy</div>
-            <div>2. cd counterfactual; node deploy.js (cat ../Loan/Loan.address) (cat ../SomeCoin/SomeCoin.address) 1</div>
-            <div>3. clevis contract mint SomeCoin 0 **counterfactualaddress** 1</div>
-            <div>4. execute one-time counterfactual tx </div>
-            <input
-                style={{verticalAlign:"middle",width:400,margin:6,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
-                type="text" name="mintAmount" value={this.state.mintAmount} onChange={this.handleInput.bind(this)}
-            />
-            <Button color={"green"} size="2" onClick={()=>{
-                this.setState({doingTransaction:true})
-                this.state.web3.eth.sendSignedTransaction("0xf9016d8085174876e8008344aa208080b9011a6080604052348015600f57600080fd5b5060405160608060ba83398101604081815282516020840151938201517f095ea7b3000000000000000000000000000000000000000000000000000000008452600160a060020a038083166004860152602485018290529251919493909284169163095ea7b39160448082019260009290919082900301818387803b158015609657600080fd5b505af115801560a9573d6000803e3d6000fd5b5050505082600160a060020a0316ff000000000000000000000000002ec0f9a5ab73a95a9eb8b094b9e030b42d30e9aa000000000000000000000000a4ba92a0b67ca4f45b241ad4e8b4266493ee300700000000000000000000000000000000000000000000000000000000000000011ba079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798a00e8fb7cdce3412843c4bff0bd9f0fe83ba0cd8aaaf083cee221f817b6443c9ad",(result)=>{
-                  console.log("RESULT",result)
-                })
-                /*tx(contracts.SomeCoin.mint(YOURARGUMENTS),(receipt)=>{
-                 this.setState({doingTransaction:false})
-               })*/
-              }}>
-              Send
-            </Button>
-            <Events
-              config={{hide:false}}
-              contract={contracts.YOURCONTRACT}
-              eventName={"YOUREVENT"}
-              block={block}
-              onUpdate={(eventData,allEvents)=>{
-                console.log("EVENT DATA:",eventData)
-                this.setState({events:allEvents})
-              }}
-            />
+            <div>{"1. clevis test full"}</div>
+            <div>{"2. clevis contract mint SomeCoin 0 (cat Loan/Loan.address) 1000"}</div>
+            <div>{"clevis contract balanceOf SomeCoin (cat Loan/Loan.address)"}</div>
+            <div>{"3. clevis contract issue Loan 0 (clevis randomhex 32) 0x2a906694D15Df38F59e76ED3a5735f8AAbccE9cb (cat SomeCoin/SomeCoin.address) 100"}</div>
+            <div>{"clevis contract balanceOf SomeCoin 0x2a906694D15Df38F59e76ED3a5735f8AAbccE9cb"}</div>
+            <div>{"clevis contract balanceOf SomeCoin (cat Loan/Loan.address)"}</div>
+            <div>{'4. cd counterfactual; node craft.js "../Sweeper/Sweeper.abi" "../Sweeper/Sweeper.bytecode" 250000 100000000000 *LOANID* (cat ../Loan/Loan.address) (cat ../SomeCoin/SomeCoin.address) 100'}</div>
+            <div>{"recipent is given payback address... can prove tx goes to bytecode... recipient uses tokens for good... recipient earns tokens back... ready to repay..."}</div>
+            <div>{"5. recipent sends tokens to counterfactual address"}</div>
+            <div>{"clevis contract balanceOf SomeCoin *counterfactualaddress* "}</div>
+            <div>{"6. fund one time counterfactualFrom"}</div>
+            <div>{"clevis sendTo 0.025 0 *counterfactualFROMaddress*"}</div>
+            <div>{"7. execute counterfactual tx and sweep funds"}</div>
+            <div>{"cd counterfactual; node deploy.js *TX*"}</div>
+            <div>{"clevis contract balanceOf SomeCoin (cat Loan/Loan.address)"}</div>
+            <div>{""}</div>
+            <div>{""}</div>
           </div>
         )
       }
