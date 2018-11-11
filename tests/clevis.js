@@ -147,6 +147,10 @@ module.exports = {
         printTxResult(result)
         result = await clevis("sendTo","0.1","0","0x9319bbb4e2652411be15bb74f339b7f6218b2508")///<<<-------- change this to your metamask accounts
         printTxResult(result)
+
+        let loanContract = fs.readFileSync(clevisConfig.CONTRACTS_FOLDER + "/Loan/Loan.address").toString().trim()
+        result = await clevis("contract","mint","SomeCoin",0,loanContract,5000)
+        printTxResult(result)
         //here is an example of running a funtion from within this object:
         //module.exports.mintTo("Greens",0,"0x2a906694d15df38f59e76ed3a5735f8aabcce9cb",20)
         //view more examples here: https://github.com/austintgriffith/galleass/blob/master/tests/galleass.js

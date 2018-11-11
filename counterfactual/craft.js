@@ -29,10 +29,16 @@ wallet.sign(contractDeployTx).then((signedDeployTx)=>{
   		from: counterfactualDeploymentPayer,
   		nonce: nonce
   	};
-    console.log("\ntransactionForValidationWithoutSig:",signedTransNoRSV)
-  	const counterfactualContractAddress = ethers.utils.getContractAddress(transaction);
-    console.log("\ncounterfactualTx:",counterfactualTx)
-    console.log("\ncounterfactualFrom (will need "+(contractDeployTx.gasPrice*contractDeployTx.gasLimit)/10**18+"ETH):",counterfactualDeploymentPayer)
-    console.log("\ncounterfactualContractAddress:",counterfactualContractAddress)
+    const counterfactualContractAddress = ethers.utils.getContractAddress(transaction);
+    let result = {
+      transactionWithoutSig: signedTransNoRSV,
+      transaction: counterfactualTx,
+      from: counterfactualDeploymentPayer,
+      gasPrice: contractDeployTx.gasPrice,
+      gasLimit: contractDeployTx.gasLimit,
+      address: counterfactualContractAddress,
+      nonce: nonce
+    }
+    console.log(JSON.stringify(result))
   })
 })

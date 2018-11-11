@@ -4,7 +4,7 @@
   "ethprice": 204.820049491,
   "deploygas": 5500000,
   "xfergas": 1300000,
-  "DEBUG": true,
+  "DEBUG": false,
   "USE_INFURA": false,
   "ROOT_FOLDER": "/Users/austingriffith/counterfactual-token-repayment",
   "CRA_FOLDER": "./src",

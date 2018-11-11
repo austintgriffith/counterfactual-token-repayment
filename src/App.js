@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import { Metamask, Gas, ContractLoader, Transactions, Events, Scaler, Blockie, Address, Button } from "dapparatus"
 import Web3 from 'web3';
+import axios from 'axios'
+
+const backendUrl = "http://0.0.0.0:1337/"
 
 class App extends Component {
   constructor(props) {
@@ -11,12 +14,43 @@ class App extends Component {
       account: false,
       gwei: 4,
       doingTransaction: false,
+      txs: {}
     }
+    this.poll()
+    setInterval(this.poll.bind(this),1500)
   }
   handleInput(e){
     let update = {}
     update[e.target.name] = e.target.value
     this.setState(update)
+  }
+  async poll(){
+    if(this.state && this.state.contracts && this.state.contracts.SomeCoin){
+      let somecoinLoanBalance = await this.state.contracts.SomeCoin.balanceOf(this.state.contracts.Loan._address).call()
+      let somecoinBalance = await this.state.contracts.SomeCoin.balanceOf(this.state.account).call()
+
+      let loans = {}
+      for(let e in this.state.events){
+        //console.log("ID",this.state.events[e].id)
+        let txs = this.state.txs
+        if(!txs[this.state.events[e].id]){
+          axios.get(backendUrl+'tx/'+this.state.events[e].id, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+          }).then((response)=>{
+            console.log("Saved tx ",this.state.events[e].id)
+            txs[this.state.events[e].id] = response.data
+            this.setState({txs})
+          })
+          .catch((error)=>{
+            console.log(error);
+          });
+        }
+      }
+
+      this.setState({somecoinBalance,somecoinLoanBalance})
+    }
   }
   render() {
     let {web3,account,contracts,tx,gwei,block,avgBlockTime,etherscan} = this.state
@@ -72,31 +106,138 @@ class App extends Component {
       )
 
       if(contracts){
+
+
+        let allLoans = []
+        for(let e in this.state.events){
+          //console.log("EVENT",this.state.events[e])
+          let found = false
+          for(let r in this.state.repayEvents){
+            //console.log("REPAY EVENT",this.state.repayEvents[e])
+            if(this.state.repayEvents[e].id == this.state.events[e].id){
+              found = this.state.repayEvents[e]
+            }
+          }
+          if(found){
+            allLoans.push(
+              <div key={e} style={{fontSize:16,margin:20,padding:20,border:"1px solid #55dd55"}}>
+                <div>{this.state.events[e].id}</div>
+                <div><Address
+                  {...this.state}
+                  address={this.state.events[e].recipient}
+                /></div>
+                <div>{this.state.events[e].value} (SomeCoin)</div>
+                <div style={{color:"#55dd55"}}>PAID</div>
+              </div>
+            )
+          }else{
+            allLoans.push(
+              <div key={e} style={{fontSize:16,margin:20,padding:20,border:"1px solid #555555"}}>
+                <div>{this.state.events[e].id}</div>
+                <div><Address
+                  {...this.state}
+                  address={this.state.events[e].recipient}
+                /></div>
+                <div>{this.state.events[e].value} (SomeCoin)</div>
+              </div>
+            )
+          }
+
+        }
+
         contractsDisplay.push(
           <div key="UI" style={{padding:30}}>
-            <div>
-              <Address
-                {...this.state}
-                address={contracts.Loan._address}
-              />
+            <h2>counterfactual loan repayment</h2>
+            <div style={{padding:20,borderBottom:"1px solid #444444"}}>
+              <div>
+                <Address
+                  {...this.state}
+                  address={contracts.Loan._address}
+                />
+              </div>
+              <div>
+                Balance: {this.state.somecoinLoanBalance} (SomeCoin)
+              </div>
             </div>
-            <div>{"1. clevis test full"}</div>
-            <div>{"2. clevis contract mint SomeCoin 0 (cat Loan/Loan.address) 1000"}</div>
-            <div>{"clevis contract balanceOf SomeCoin (cat Loan/Loan.address)"}</div>
-            <div>{"3. clevis contract issue Loan 0 (clevis randomhex 32) 0x2a906694D15Df38F59e76ED3a5735f8AAbccE9cb (cat SomeCoin/SomeCoin.address) 100"}</div>
-            <div>{"clevis contract balanceOf SomeCoin 0x2a906694D15Df38F59e76ED3a5735f8AAbccE9cb"}</div>
-            <div>{"clevis contract balanceOf SomeCoin (cat Loan/Loan.address)"}</div>
-            <div>{'4. cd counterfactual; node craft.js "../Sweeper/Sweeper.abi" "../Sweeper/Sweeper.bytecode" 250000 100000000000 *LOANID* (cat ../Loan/Loan.address) (cat ../SomeCoin/SomeCoin.address) 100'}</div>
-            <div>{"recipent is given payback address... can prove tx goes to bytecode... recipient uses tokens for good... recipient earns tokens back... ready to repay..."}</div>
-            <div>{"5. recipent sends tokens to counterfactual address"}</div>
-            <div>{"clevis contract balanceOf SomeCoin *counterfactualaddress* "}</div>
-            <div>{"6. fund one time counterfactualFrom"}</div>
-            <div>{"clevis sendTo 0.025 0 *counterfactualFROMaddress*"}</div>
-            <div>{"7. execute counterfactual tx and sweep funds"}</div>
-            <div>{"cd counterfactual; node deploy.js *TX*"}</div>
-            <div>{"clevis contract balanceOf SomeCoin (cat Loan/Loan.address)"}</div>
-            <div>{""}</div>
-            <div>{""}</div>
+
+            <div style={{padding:20,borderBottom:"1px solid #444444"}}>
+              <div>
+                <Address
+                  {...this.state}
+                  address={this.state.account}
+                />
+              </div>
+
+              <div>
+                Balance: {this.state.somecoinBalance} (SomeCoin)
+              </div>
+              <div>
+                Send <input
+                    style={{verticalAlign:"middle",width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                    type="text" name="sendAmount" value={this.state.sendAmount} onChange={this.handleInput.bind(this)}
+                />to<input
+                    style={{verticalAlign:"middle",width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                    type="text" name="sendTo" value={this.state.sendTo} onChange={this.handleInput.bind(this)}
+                />
+                <Button size="2" color={"green"} onClick={()=>{
+                    tx(contracts.SomeCoin.transfer(this.state.sendTo,this.state.sendAmount),(receipt)=>{
+                      console.log("TX CALLED BACK",receipt)
+                      this.setState({sendTo:"",sendAmount:""})
+                    })
+                  }}>
+                  Send
+                </Button>
+
+              </div>
+            </div>
+
+            <div style={{padding:20,borderBottom:"1px solid #444444"}}>
+              <div>Issue Loan to <input
+                  style={{verticalAlign:"middle",width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                  type="text" name="loanRecipient" value={this.state.loanRecipient} onChange={this.handleInput.bind(this)}
+              /> for <input
+                  style={{verticalAlign:"middle",width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                  type="text" name="loanAmount" value={this.state.loanAmount} onChange={this.handleInput.bind(this)}
+              /> tokens   <Button size="2" onClick={()=>{
+                    axios.post(backendUrl+'issue',{loanAmount:this.state.loanAmount,loanRecipient:this.state.loanRecipient}, {
+                      headers: {
+                          'Content-Type': 'application/json',
+                      }
+                    }).then((response)=>{
+                      console.log("ISSUED",response.data)
+                    })
+                    .catch((error)=>{
+                      console.log(error);
+                    });
+
+                  }}>
+                  Issue
+                </Button>
+              </div>
+            </div>
+
+            {allLoans}
+
+            <Events
+              /*config={{hide:false}}*/
+              contract={contracts.Loan}
+              eventName={"Issue"}
+              block={this.state.block}
+              onUpdate={(eventData,allEvents)=>{
+                //console.log("EVENT DATA:",eventData)
+                this.setState({events:allEvents})
+              }}
+            />
+            <Events
+              /*config={{hide:false}}*/
+              contract={contracts.Loan}
+              eventName={"Repay"}
+              block={this.state.block}
+              onUpdate={(eventData,allEvents)=>{
+                //console.log("EVENT DATA:",eventData)
+                this.setState({repayEvents:allEvents})
+              }}
+            />
           </div>
         )
       }
@@ -108,6 +249,7 @@ class App extends Component {
           config={{requiredNetwork:['Unknown','Rinkeby']}}
           onUpdate={(state)=>{
            console.log("metamask state update:",state)
+
            if(state.web3Provider) {
              state.web3 = new Web3(state.web3Provider)
              this.setState(state)

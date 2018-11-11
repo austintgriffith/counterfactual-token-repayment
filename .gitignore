@@ -1,3 +1,4 @@
+txs
 src/contracts/*
 deploy.network
 aws.json

@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "clevis": "0.0.94",
+    "cors": "^2.8.5",
     "dapparatus": "^1.0.23",
     "ethers": "^4.0.7",
+    "express": "^4.16.4",
+    "helmet": "^3.15.0",
     "mocha": "^5.2.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",

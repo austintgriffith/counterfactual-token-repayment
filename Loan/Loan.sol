@@ -44,7 +44,7 @@ contract Loan {
     loans[id].repaid = true;
     //transfer funds into this contract from recipient and verify
     uint256 startingBalance = IERC20(loans[id].token).balanceOf(address(this));
-    IERC20(loans[id].token).transferFrom(loans[id].recipient,address(this),loans[id].amount);
+    IERC20(loans[id].token).transferFrom(msg.sender,address(this),loans[id].amount);
     require(
      (startingBalance+loans[id].amount) == IERC20(loans[id].token).balanceOf(address(this)),
      "ERC20 Balance did not change correctly"
