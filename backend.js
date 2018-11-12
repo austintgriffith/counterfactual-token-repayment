@@ -21,7 +21,7 @@ const ContractLoader =  function(contractList,web3){
   return contracts
 }
 
-
+const GAS_TO_SEND = 250000 //.025ETH?
 
 var bodyParser = require('body-parser')
 app.use(bodyParser.json());
@@ -72,7 +72,6 @@ app.get('/tx/:id', async (req, res) => {
   }catch(e){
     res.end("{}")
   }
-
 });
 
 app.post('/issue', async (req, res) => {
@@ -84,7 +83,7 @@ app.post('/issue', async (req, res) => {
 
   let counterfactualParams = `"Sweeper/Sweeper.abi" `+
   `"Sweeper/Sweeper.bytecode" `+
-  `250000 `+
+  GAS_TO_SEND+` `+
   `100000000000 `+
   id+" "+
   contracts.Loan._address+" "+
@@ -121,6 +120,45 @@ app.post('/issue', async (req, res) => {
 
       res.set('Content-Type', 'application/json');
       res.end(JSON.stringify({id,counterfactual,result}));
+    }
+  });
+
+});
+
+
+app.post('/collect', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  console.log("/collect",req.body)
+  let id = req.body.id.replace(/[\W_]+/g,"");
+  console.log("loading tx/"+id)
+  let tx = JSON.parse(fs.readFileSync("txs/"+id))
+  console.log(tx)
+
+  let gasInEth = GAS_TO_SEND/10000000
+
+  console.log("Funding "+tx.from+" with "+gasInEth+"ETH from acount index 0...")
+
+  //fund account...
+  let result = await clevis(
+    "sendTo",
+    ""+gasInEth,
+    0,
+    tx.from
+  )
+  console.log(result)
+
+  exec('/usr/local/bin/node counterfactual/deploy.js '+tx.transaction,async (err, stdout, stderr) => {
+    if (err) {
+      console.error("err",err);
+      return;
+    }
+    if(stderr){
+      console.log("ERROR:",stderr)
+    }else{
+      console.log("STDOUT:",stdout)
+
+      res.set('Content-Type', 'application/json');
+      res.end(JSON.stringify({result:stdout}));
     }
   });
 

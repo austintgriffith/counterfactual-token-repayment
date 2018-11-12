@@ -46,6 +46,8 @@ class App extends Component {
           .catch((error)=>{
             console.log(error);
           });
+        }else{
+          txs[this.state.events[e].id].balance = await this.state.contracts.SomeCoin.balanceOf(txs[this.state.events[e].id].address).call()
         }
       }
 
@@ -113,11 +115,50 @@ class App extends Component {
           //console.log("EVENT",this.state.events[e])
           let found = false
           for(let r in this.state.repayEvents){
-            //console.log("REPAY EVENT",this.state.repayEvents[e])
-            if(this.state.repayEvents[e].id == this.state.events[e].id){
-              found = this.state.repayEvents[e]
+            if(this.state.repayEvents[r] &&  this.state.events[e] && this.state.repayEvents[r].id == this.state.events[e].id){
+              found = this.state.repayEvents[r]
             }
           }
+
+          let border = "#555555"
+
+          let counterfactualData = ""
+          let collectButton = ""
+          if(this.state.txs[this.state.events[e].id]){
+            let tx = this.state.txs[this.state.events[e].id]
+            counterfactualData = (
+              <div style={{margin:10}}>
+                Please repay to: <Address
+                  {...this.state}
+                  address={tx.address}
+                />
+                <div>
+                  {tx.balance} (SomeCoin)
+                </div>
+              </div>
+            )
+            if(this.state.events[e].value<=tx.balance){
+              border = "#5555cc"
+              collectButton = (
+                <Button size="2" onClick={()=>{
+                  axios.post(backendUrl+'collect',{id:this.state.events[e].id}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                  }).then((response)=>{
+                    console.log("COLLECTED",response.data)
+                  })
+                  .catch((error)=>{
+                    console.log(error);
+                  });
+
+                  }}>
+                  Collect
+                </Button>
+              )
+            }
+          }
+
           if(found){
             allLoans.push(
               <div key={e} style={{fontSize:16,margin:20,padding:20,border:"1px solid #55dd55"}}>
@@ -132,13 +173,15 @@ class App extends Component {
             )
           }else{
             allLoans.push(
-              <div key={e} style={{fontSize:16,margin:20,padding:20,border:"1px solid #555555"}}>
+              <div key={e} style={{fontSize:16,margin:20,padding:20,border:"1px solid "+border}}>
                 <div>{this.state.events[e].id}</div>
                 <div><Address
                   {...this.state}
                   address={this.state.events[e].recipient}
                 /></div>
                 <div>{this.state.events[e].value} (SomeCoin)</div>
+                {counterfactualData}
+                {collectButton}
               </div>
             )
           }
@@ -173,10 +216,13 @@ class App extends Component {
               </div>
               <div>
                 Send <input
-                    style={{verticalAlign:"middle",width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                    style={{width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
                     type="text" name="sendAmount" value={this.state.sendAmount} onChange={this.handleInput.bind(this)}
-                />to<input
-                    style={{verticalAlign:"middle",width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                />to<Blockie
+                  address={this.state.sendTo}
+                  config={{size:2}}
+                 /><input
+                    style={{width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
                     type="text" name="sendTo" value={this.state.sendTo} onChange={this.handleInput.bind(this)}
                 />
                 <Button size="2" color={"green"} onClick={()=>{
@@ -193,10 +239,10 @@ class App extends Component {
 
             <div style={{padding:20,borderBottom:"1px solid #444444"}}>
               <div>Issue Loan to <input
-                  style={{verticalAlign:"middle",width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                  style={{width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
                   type="text" name="loanRecipient" value={this.state.loanRecipient} onChange={this.handleInput.bind(this)}
               /> for <input
-                  style={{verticalAlign:"middle",width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                  style={{width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
                   type="text" name="loanAmount" value={this.state.loanAmount} onChange={this.handleInput.bind(this)}
               /> tokens   <Button size="2" onClick={()=>{
                     axios.post(backendUrl+'issue',{loanAmount:this.state.loanAmount,loanRecipient:this.state.loanRecipient}, {
@@ -205,6 +251,7 @@ class App extends Component {
                       }
                     }).then((response)=>{
                       console.log("ISSUED",response.data)
+                      this.setState({loanAmount:"",loanRecipient:""})
                     })
                     .catch((error)=>{
                       console.log(error);
