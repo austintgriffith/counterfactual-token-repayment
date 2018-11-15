@@ -68,8 +68,10 @@ app.get('/tx/:id', async (req, res) => {
   let id = req.params.id.replace(/[\W_]+/g,"");
   console.log("/tx/"+id)
   try{
+    res.set('Content-Type', 'application/json');
     res.end(fs.readFileSync("txs/"+id))
   }catch(e){
+    res.set('Content-Type', 'application/json');
     res.end("{}")
   }
 });
