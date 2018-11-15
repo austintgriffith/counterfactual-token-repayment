@@ -21,7 +21,7 @@ const ContractLoader =  function(contractList,web3){
   return contracts
 }
 
-const GAS_TO_SEND = 250000 //.025ETH?
+const GAS_TO_SEND = 200000 //.020ETH?
 
 var bodyParser = require('body-parser')
 app.use(bodyParser.json());

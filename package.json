@@ -7,6 +7,7 @@
     "clevis": "0.0.94",
     "cors": "^2.8.5",
     "dapparatus": "^1.0.23",
+    "dotenv": "^6.1.0",
     "ethers": "^4.0.7",
     "express": "^4.16.4",
     "helmet": "^3.15.0",
