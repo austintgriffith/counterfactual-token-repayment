@@ -203,6 +203,37 @@ class App extends Component {
               </div>
             </div>
 
+
+            <div style={{padding:20,borderBottom:"1px solid #444444"}}>
+              <div>Issue Loan to <input
+                  style={{width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                  type="text" name="loanRecipient" value={this.state.loanRecipient} onChange={this.handleInput.bind(this)}
+              /> for <input
+                  style={{width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
+                  type="text" name="loanAmount" value={this.state.loanAmount} onChange={this.handleInput.bind(this)}
+              /> tokens   <Button size="2" onClick={()=>{
+                    axios.post(backendUrl+'issue',{loanAmount:this.state.loanAmount,loanRecipient:this.state.loanRecipient}, {
+                      headers: {
+                          'Content-Type': 'application/json',
+                      }
+                    }).then((response)=>{
+                      console.log("ISSUED",response.data)
+                      this.setState({loanAmount:"",loanRecipient:""})
+                    })
+                    .catch((error)=>{
+                      console.log(error);
+                    });
+
+                  }}>
+                  Issue
+                </Button>
+              </div>
+            </div>
+
+            <div style={{padding:20,borderBottom:"1px solid #444444"}}>
+              {allLoans}
+            </div>
+
             <div style={{padding:20,borderBottom:"1px solid #444444"}}>
               <div>
                 <Address
@@ -237,33 +268,6 @@ class App extends Component {
               </div>
             </div>
 
-            <div style={{padding:20,borderBottom:"1px solid #444444"}}>
-              <div>Issue Loan to <input
-                  style={{width:300,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
-                  type="text" name="loanRecipient" value={this.state.loanRecipient} onChange={this.handleInput.bind(this)}
-              /> for <input
-                  style={{width:60,margin:6,marginTop:20,maxHeight:20,padding:5,border:'2px solid #ccc',borderRadius:5}}
-                  type="text" name="loanAmount" value={this.state.loanAmount} onChange={this.handleInput.bind(this)}
-              /> tokens   <Button size="2" onClick={()=>{
-                    axios.post(backendUrl+'issue',{loanAmount:this.state.loanAmount,loanRecipient:this.state.loanRecipient}, {
-                      headers: {
-                          'Content-Type': 'application/json',
-                      }
-                    }).then((response)=>{
-                      console.log("ISSUED",response.data)
-                      this.setState({loanAmount:"",loanRecipient:""})
-                    })
-                    .catch((error)=>{
-                      console.log(error);
-                    });
-
-                  }}>
-                  Issue
-                </Button>
-              </div>
-            </div>
-
-            {allLoans}
 
             <Events
               /*config={{hide:false}}*/

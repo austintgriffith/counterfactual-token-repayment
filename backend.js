@@ -81,8 +81,8 @@ app.post('/issue', async (req, res) => {
   console.log("id",id)
   console.log(await clevis("version"))
 
-  let counterfactualParams = `"Sweeper/Sweeper.abi" `+
-  `"Sweeper/Sweeper.bytecode" `+
+  let counterfactualParams = `"contracts/Sweeper/Sweeper.abi" `+
+  `"contracts/Sweeper/Sweeper.bytecode" `+
   GAS_TO_SEND+` `+
   `100000000000 `+
   id+" "+
@@ -90,7 +90,7 @@ app.post('/issue', async (req, res) => {
   contracts.SomeCoin._address+" "+
   req.body.loanAmount
 
-  exec('/usr/local/bin/node counterfactual/craft.js '+counterfactualParams,async (err, stdout, stderr) => {
+  exec('node counterfactual/craft.js '+counterfactualParams,async (err, stdout, stderr) => {
     if (err) {
       console.error("err",err);
       return;
@@ -147,7 +147,7 @@ app.post('/collect', async (req, res) => {
   )
   console.log(result)
 
-  exec('/usr/local/bin/node counterfactual/deploy.js '+tx.transaction,async (err, stdout, stderr) => {
+  exec('node counterfactual/deploy.js '+tx.transaction,async (err, stdout, stderr) => {
     if (err) {
       console.error("err",err);
       return;
