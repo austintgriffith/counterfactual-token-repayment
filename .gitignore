@@ -1,3 +1,4 @@
+clevis.json*
 txs
 src/contracts/*
 deploy.network

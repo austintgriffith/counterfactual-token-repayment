@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
-    "clevis": "0.0.94",
+    "clevis": "0.0.104",
     "cors": "^2.8.5",
     "dapparatus": "^1.0.23",
     "dotenv": "^6.1.0",
@@ -15,7 +15,8 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-scripts": "2.0.5",
-    "s3": "^4.4.0"
+    "s3": "^4.4.0",
+    "web3": "^1.0.0-beta.36"
   },
   "scripts": {
     "start": "react-scripts start",
